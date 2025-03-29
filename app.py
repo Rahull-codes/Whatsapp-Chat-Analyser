@@ -169,7 +169,7 @@ if uploaded_file is not None:
         with col1:
             st.dataframe(emoji_df , height=480)
         with col2:
-            plt.rcParams['font.family'] = 'Segoe UI Emoji'
+            plt.rcParams['font.family'] = ['Arial Unicode MS', 'DejaVu Sans', 'sans-serif']
 
             fig, ax = plt.subplots(figsize=(3,3))
             ax.pie(emoji_df["Number of time used"].head(),
