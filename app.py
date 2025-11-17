@@ -2,21 +2,19 @@ import streamlit as st
 import preprocessor,helper
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 from imojify import imojify
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import numpy as np
 
-
-
 st.markdown(
     """
     <style>
+    /* Style all text areas (or narrow with a more specific selector) */
     div[data-testid="stTextArea"] textarea {
-        background-color: #0f172a0d;     
-        border-radius: 10px;         
-        border: 1px solid #4b5563;        
-        font-size: 1rem;               
+        background-color: #0f172a0d;      /* subtle dark translucent bg */
+        border-radius: 10px;              /* rounded corners */
+        border: 1px solid #4b5563;        /* soft border */
+        font-size: 1rem;               /* slightly smaller text */
         line-height: 1.4;
         padding: 10px;
     }
@@ -208,19 +206,21 @@ if uploaded_file is not None:
                 # Use emoji‑capable font (Windows)
                 plt.rcParams["font.family"] = "Segoe UI Emoji"
 
-                fig, ax = plt.subplots(figsize=(8, 8))
+                # Smaller figure for desktop + mobile
+                fig, ax = plt.subplots(figsize=(3, 3))
 
                 # Use column names instead of numeric indices
                 sizes = emoji_df["Number of time used"].head()
                 emojis = emoji_df["Emojis"].head()
 
-                # Base pie (no labels – we will draw emojis manually)
+                # Base pie (reduced radius so it doesn't touch edges)
                 wedges, texts, autotexts = ax.pie(
                     sizes,
                     labels=[""] * len(emojis),
                     autopct="%0.2f%%",
                     startangle=90,
-                    textprops={"fontsize": 14},
+                    radius=0.8,  # <‑ smaller pie inside the figure
+                    textprops={"fontsize": 7},
                 )
 
                 # Add emoji images (or fallback to text)
@@ -230,34 +230,30 @@ if uploaded_file is not None:
                         if img_path:
                             img = plt.imread(img_path)
 
-                            # Mid‑angle of wedge
                             angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
-                            x = 1.2 * np.cos(np.radians(angle))
-                            y = 1.2 * np.sin(np.radians(angle))
+                            x = 0.85 * np.cos(np.radians(angle))  # closer to center
+                            y = 0.85 * np.sin(np.radians(angle))
 
-                            im = OffsetImage(img, zoom=0.08)
-                            ab = AnnotationBbox(im, (x, y), frameon=False, pad=0)
+                            im = OffsetImage(img, zoom=0.025)  # smaller emoji icons
+                            ab = AnnotationBbox(im, (x, y), frameon=False, pad=1)
                             ax.add_artist(ab)
                         else:
-                            # Fallback: draw emoji as text if image not found
                             angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
-                            x = 1.2 * np.cos(np.radians(angle))
-                            y = 1.2 * np.sin(np.radians(angle))
-                            ax.text(x, y, emoji_char, ha="center", va="center", fontsize=18)
+                            x = 0.9 * np.cos(np.radians(angle))
+                            y = 0.9 * np.sin(np.radians(angle))
+                            ax.text(x, y, emoji_char, ha="center", va="center", fontsize=14)
                     except Exception:
-                        # Last‑resort fallback: draw emoji text
                         angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
-                        x = 1.2 * np.cos(np.radians(angle))
-                        y = 1.2 * np.sin(np.radians(angle))
-                        ax.text(x, y, emoji_char, ha="center", va="center", fontsize=18)
+                        x = 0.9 * np.cos(np.radians(angle))
+                        y = 0.9 * np.sin(np.radians(angle))
+                        ax.text(x, y, emoji_char, ha="center", va="center", fontsize=14)
 
-                ax.set_title("Most Used Emojis", fontsize=16, pad=20)
+                ax.set_title("Most Used Emojis", fontsize=6, pad=10)
                 ax.axis("equal")
                 plt.tight_layout()
                 st.pyplot(fig)
             else:
                 st.write("No emojis found in the selected conversation.")
-
 
 
 
