@@ -3,7 +3,28 @@ import preprocessor,helper
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from helper import most_common_words
+from imojify import imojify
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import numpy as np
+
+
+
+st.markdown(
+    """
+    <style>
+    /* Style all text areas (or narrow with a more specific selector) */
+    div[data-testid="stTextArea"] textarea {
+        background-color: #0f172a0d;      /* subtle dark translucent bg */
+        border-radius: 10px;              /* rounded corners */
+        border: 1px solid #4b5563;        /* soft border */
+        font-size: 1rem;               /* slightly smaller text */
+        line-height: 1.4;
+        padding: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.sidebar.title("Whatsapp Chat Analyzer")
 
@@ -42,6 +63,22 @@ if uploaded_file is not None:
         with col4:
             st.subheader("Total no. of Links")
             st.title(num_links)
+
+        # ----------------- AI SUMMARY SECTION -----------------
+        # st.markdown("---")
+        st.title("AI Summary of this Chat")
+
+        with st.spinner("Generating summary..."):
+            summary_text = helper.summarize_chat_from_df(selected_user, df)
+
+        summary_text = st.text_area(
+            label="AI summary of this chat",
+            value=summary_text,
+            height=160,
+            placeholder="This is an automatically generated overview of the conversation...",
+            label_visibility="collapsed",  # hide the label, keep only custom heading
+            key="summary_box",
+        )
 
         # timeline
         st.title('Message Activity Over Time')
@@ -88,7 +125,6 @@ if uploaded_file is not None:
             plt.xticks(rotation=45)
             plt.grid(axis='y', linestyle='--', alpha=0.6)
             st.pyplot(fig)
-
         with col2:
             st.subheader("Most busy month")
             busy_month = helper.month_activity_map(selected_user, df)
@@ -126,7 +162,6 @@ if uploaded_file is not None:
                 ax.grid(axis="x", linestyle="--", alpha=0.7)
                 plt.xticks(rotation=45)
                 st.pyplot(fig)
-
             with col2:
                 new_df.index = new_df.index + 1
                 st.dataframe(new_df, height=480)
@@ -161,24 +196,92 @@ if uploaded_file is not None:
             st.pyplot(fig)
 
         #emoji analysis
-        emoji_df = helper.emoji_helper(selected_user, df)
+        # emoji_df = helper.emoji_helper(selected_user, df)
+        # st.title("Emoji Analysis")
+        #
+        # col1, col2 = st.columns(2)
+        #
+        # with col1:
+        #     st.dataframe(emoji_df , height=480)
+        # with col2:
+        #     plt.rcParams['font.family'] = 'Segoe UI Emoji'
+        #
+        #     fig, ax = plt.subplots(figsize=(3,3))
+        #     ax.pie(emoji_df["Number of time used"].head(),
+        #            labels=emoji_df["Emojis"].head(),
+        #            autopct=lambda p: f'{p:.2f}%',
+        #            textprops={'fontsize': 8}
+        #            )
+        #
+        #     st.pyplot(fig)
+
+        # ----------------- Emoji Analysis -----------------
         st.title("Emoji Analysis")
+        emoji_df = helper.emoji_helper(selected_user, df)
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.dataframe(emoji_df , height=480)
+            st.dataframe(emoji_df, height=480)
+
         with col2:
-            plt.rcParams['font.family'] = [ 'DejaVu Sans', 'sans-serif']
+            if not emoji_df.empty:
+                # Use emoji‑capable font (Windows)
+                plt.rcParams["font.family"] = "Segoe UI Emoji"
 
-            fig, ax = plt.subplots(figsize=(3,3))
-            ax.pie(emoji_df["Number of time used"].head(),
-                   labels=emoji_df["Emojis"].head(),
-                   autopct=lambda p: f'{p:.2f}%',
-                   textprops={'fontsize': 8}
-                   )
+                fig, ax = plt.subplots(figsize=(8, 8))
 
-            st.pyplot(fig)
+                # Use column names instead of numeric indices
+                sizes = emoji_df["Number of time used"].head()
+                emojis = emoji_df["Emojis"].head()
+
+                # Base pie (no labels – we will draw emojis manually)
+                wedges, texts, autotexts = ax.pie(
+                    sizes,
+                    labels=[""] * len(emojis),
+                    autopct="%0.2f%%",
+                    startangle=90,
+                    textprops={"fontsize": 14},
+                )
+
+                # Add emoji images (or fallback to text)
+                for i, (emoji_char, count) in enumerate(zip(emojis, sizes)):
+                    try:
+                        img_path = imojify.get_img_path(emoji_char)
+                        if img_path:
+                            img = plt.imread(img_path)
+
+                            # Mid‑angle of wedge
+                            angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
+                            x = 1.2 * np.cos(np.radians(angle))
+                            y = 1.2 * np.sin(np.radians(angle))
+
+                            im = OffsetImage(img, zoom=0.08)
+                            ab = AnnotationBbox(im, (x, y), frameon=False, pad=0)
+                            ax.add_artist(ab)
+                        else:
+                            # Fallback: draw emoji as text if image not found
+                            angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
+                            x = 1.2 * np.cos(np.radians(angle))
+                            y = 1.2 * np.sin(np.radians(angle))
+                            ax.text(x, y, emoji_char, ha="center", va="center", fontsize=18)
+                    except Exception:
+                        # Last‑resort fallback: draw emoji text
+                        angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
+                        x = 1.2 * np.cos(np.radians(angle))
+                        y = 1.2 * np.sin(np.radians(angle))
+                        ax.text(x, y, emoji_char, ha="center", va="center", fontsize=18)
+
+                ax.set_title("Most Used Emojis", fontsize=16, pad=20)
+                ax.axis("equal")
+                plt.tight_layout()
+                st.pyplot(fig)
+            else:
+                st.write("No emojis found in the selected conversation.")
+
+
+
+
 
 
 
