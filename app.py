@@ -201,59 +201,60 @@ if uploaded_file is not None:
         with col1:
             st.dataframe(emoji_df, height=480)
 
-        # with col2:
-        #     if not emoji_df.empty:
-        #         # Use emoji‑capable font (Windows)
-        #         # plt.rcParams["font.family"] = "Segoe UI Emoji"
+        with col2:
+            if not emoji_df.empty:
+                # Use emoji‑capable font (Windows)
+                # plt.rcParams["font.family"] = "Segoe UI Emoji"
 
-        #         # Smaller figure for desktop + mobile
-        #         fig, ax = plt.subplots(figsize=(3, 3))
+                # Smaller figure for desktop + mobile
+                fig, ax = plt.subplots(figsize=(3, 3))
 
-        #         # Use column names instead of numeric indices
-        #         sizes = emoji_df["Number of time used"].head()
-        #         emojis = emoji_df["Emojis"].head()
+                # Use column names instead of numeric indices
+                sizes = emoji_df["Number of time used"].head()
+                emojis = emoji_df["Emojis"].head()
 
-        #         # Base pie (reduced radius so it doesn't touch edges)
-        #         wedges, texts, autotexts = ax.pie(
-        #             sizes,
-        #             labels=[""] * len(emojis),
-        #             autopct="%0.2f%%",
-        #             startangle=90,
-        #             radius=0.8,  # <‑ smaller pie inside the figure
-        #             textprops={"fontsize": 7},
-        #         )
+                # Base pie (reduced radius so it doesn't touch edges)
+                wedges, texts, autotexts = ax.pie(
+                    sizes,
+                    labels=[""] * len(emojis),
+                    autopct="%0.2f%%",
+                    startangle=90,
+                    radius=0.8,  # <‑ smaller pie inside the figure
+                    textprops={"fontsize": 7},
+                )
 
-        #         # Add emoji images (or fallback to text)
-        #         for i, (emoji_char, count) in enumerate(zip(emojis, sizes)):
-        #             try:
-        #                 img_path = imojify.get_img_path(emoji_char)
-        #                 if img_path:
-        #                     img = plt.imread(img_path)
+                # Add emoji images (or fallback to text)
+                for i, (emoji_char, count) in enumerate(zip(emojis, sizes)):
+                    try:
+                        img_path = imojify.get_img_path(emoji_char)
+                        if img_path:
+                            img = plt.imread(img_path)
 
-        #                     angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
-        #                     x = 0.85 * np.cos(np.radians(angle))  # closer to center
-        #                     y = 0.85 * np.sin(np.radians(angle))
+                            angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
+                            x = 0.85 * np.cos(np.radians(angle))  # closer to center
+                            y = 0.85 * np.sin(np.radians(angle))
 
-        #                     im = OffsetImage(img, zoom=0.025)  # smaller emoji icons
-        #                     ab = AnnotationBbox(im, (x, y), frameon=False, pad=1)
-        #                     ax.add_artist(ab)
-        #                 else:
-        #                     angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
-        #                     x = 0.9 * np.cos(np.radians(angle))
-        #                     y = 0.9 * np.sin(np.radians(angle))
-        #                     ax.text(x, y, emoji_char, ha="center", va="center", fontsize=14)
-        #             except Exception:
-        #                 angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
-        #                 x = 0.9 * np.cos(np.radians(angle))
-        #                 y = 0.9 * np.sin(np.radians(angle))
-        #                 ax.text(x, y, emoji_char, ha="center", va="center", fontsize=14)
+                            im = OffsetImage(img, zoom=0.025)  # smaller emoji icons
+                            ab = AnnotationBbox(im, (x, y), frameon=False, pad=1)
+                            ax.add_artist(ab)
+                        else:
+                            angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
+                            x = 0.9 * np.cos(np.radians(angle))
+                            y = 0.9 * np.sin(np.radians(angle))
+                            ax.text(x, y, emoji_char, ha="center", va="center", fontsize=14)
+                    except Exception:
+                        angle = wedges[i].theta1 + (wedges[i].theta2 - wedges[i].theta1) / 2
+                        x = 0.9 * np.cos(np.radians(angle))
+                        y = 0.9 * np.sin(np.radians(angle))
+                        ax.text(x, y, emoji_char, ha="center", va="center", fontsize=14)
 
-        #         ax.set_title("Most Used Emojis", fontsize=6, pad=10)
-        #         ax.axis("equal")
-        #         plt.tight_layout()
-        #         st.pyplot(fig)
-        #     else:
-        #         st.write("No emojis found in the selected conversation.")
+                ax.set_title("Most Used Emojis", fontsize=6, pad=10)
+                ax.axis("equal")
+                plt.tight_layout()
+                st.pyplot(fig)
+            else:
+                st.write("No emojis found in the selected conversation.")
+
 
 
 
