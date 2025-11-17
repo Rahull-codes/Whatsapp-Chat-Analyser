@@ -204,7 +204,7 @@ if uploaded_file is not None:
         with col2:
             if not emoji_df.empty:
                 # Use emoji‑capable font (Windows)
-                plt.rcParams["font.family"] = "Segoe UI Emoji"
+                # plt.rcParams["font.family"] = "Segoe UI Emoji"
 
                 # Smaller figure for desktop + mobile
                 fig, ax = plt.subplots(figsize=(3, 3))
@@ -254,6 +254,7 @@ if uploaded_file is not None:
                 st.pyplot(fig)
             else:
                 st.write("No emojis found in the selected conversation.")
+
 
 
 
