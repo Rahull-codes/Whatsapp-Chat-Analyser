@@ -195,26 +195,6 @@ if uploaded_file is not None:
 
             st.pyplot(fig)
 
-        #emoji analysis
-        # emoji_df = helper.emoji_helper(selected_user, df)
-        # st.title("Emoji Analysis")
-        #
-        # col1, col2 = st.columns(2)
-        #
-        # with col1:
-        #     st.dataframe(emoji_df , height=480)
-        # with col2:
-        #     plt.rcParams['font.family'] = 'Segoe UI Emoji'
-        #
-        #     fig, ax = plt.subplots(figsize=(3,3))
-        #     ax.pie(emoji_df["Number of time used"].head(),
-        #            labels=emoji_df["Emojis"].head(),
-        #            autopct=lambda p: f'{p:.2f}%',
-        #            textprops={'fontsize': 8}
-        #            )
-        #
-        #     st.pyplot(fig)
-
         # ----------------- Emoji Analysis -----------------
         st.title("Emoji Analysis")
         emoji_df = helper.emoji_helper(selected_user, df)
@@ -278,6 +258,7 @@ if uploaded_file is not None:
                 st.pyplot(fig)
             else:
                 st.write("No emojis found in the selected conversation.")
+
 
 
 
