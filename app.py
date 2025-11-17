@@ -12,12 +12,11 @@ import numpy as np
 st.markdown(
     """
     <style>
-    /* Style all text areas (or narrow with a more specific selector) */
     div[data-testid="stTextArea"] textarea {
-        background-color: #0f172a0d;      /* subtle dark translucent bg */
-        border-radius: 10px;              /* rounded corners */
-        border: 1px solid #4b5563;        /* soft border */
-        font-size: 1rem;               /* slightly smaller text */
+        background-color: #0f172a0d;     
+        border-radius: 10px;         
+        border: 1px solid #4b5563;        
+        font-size: 1rem;               
         line-height: 1.4;
         padding: 10px;
     }
@@ -258,6 +257,7 @@ if uploaded_file is not None:
                 st.pyplot(fig)
             else:
                 st.write("No emojis found in the selected conversation.")
+
 
 
 
