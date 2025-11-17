@@ -9,12 +9,11 @@ import numpy as np
 st.markdown(
     """
     <style>
-    /* Style all text areas (or narrow with a more specific selector) */
     div[data-testid="stTextArea"] textarea {
-        background-color: #0f172a0d;      /* subtle dark translucent bg */
-        border-radius: 10px;              /* rounded corners */
-        border: 1px solid #4b5563;        /* soft border */
-        font-size: 1rem;               /* slightly smaller text */
+        background-color: #0f172a0d;      
+        border-radius: 10px;             
+        border: 1px solid #4b5563;       
+        font-size: 1rem;               
         line-height: 1.4;
         padding: 10px;
     }
@@ -68,13 +67,12 @@ if uploaded_file is not None:
         with st.spinner("Generating summary..."):
             summary_text = helper.summarize_chat_from_df(selected_user, df)
 
-        summary_text = st.text_area(
-            label="AI summary of this chat",
-            value=summary_text,
-            height=160,
-            placeholder="This is an automatically generated overview of the conversation...",
-            label_visibility="collapsed",  # hide the label, keep only custom heading
-            key="summary_box",
+        st.markdown(
+            f"<div style='background-color:#0f172a0d;"
+            f"border-radius:10px;border:1px solid #4b5563;"
+            f"padding:10px;font-size:1rem;line-height:1.4;'>"
+            f"{summary_text}</div>",
+            unsafe_allow_html=True,
         )
 
         # timeline
@@ -254,6 +252,7 @@ if uploaded_file is not None:
                 st.pyplot(fig)
             else:
                 st.write("No emojis found in the selected conversation.")
+
 
 
 
