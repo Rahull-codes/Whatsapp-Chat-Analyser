@@ -9,7 +9,7 @@ import traceback
 
 import google.generativeai as genai
 
-# Configure the API key directly
+# Configure the API key directly..
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 extract = URLExtract()
@@ -183,4 +183,5 @@ def summarize_chat_from_df(selected_user, df):
         if "429" in str(e):
             return "⚠️ AI Usage Limit Reached. Please wait a minute."
         return f"Error: {e}"
+
 
