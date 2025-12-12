@@ -42,7 +42,21 @@ if uploaded_file is not None:
 
     selected_user = st.sidebar.selectbox("show analysis wrt" , user_list)
 
-    if st.sidebar.button("Show Analysis"):
+    # 1. Initialize the state if it doesn't exist
+    if "show_analysis" not in st.session_state:
+        st.session_state["show_analysis"] = False
+
+
+    # 2. Define a function to handle the click
+    def enable_analysis():
+        st.session_state["show_analysis"] = True
+
+
+    # 3. Use the 'on_click' parameter (This is the key fix!)
+    st.sidebar.button("Show Analysis", on_click=enable_analysis)
+
+    # 4. Check the state
+    if st.session_state["show_analysis"]:
 
         num_messages , words ,media_count , num_links = helper.fetch_stats(selected_user , df)
         st.title('Top Statistics')
@@ -65,16 +79,19 @@ if uploaded_file is not None:
         # st.markdown("---")
         st.title("AI Summary of this Chat")
 
-        with st.spinner("Generating summary..."):
-            summary_text = helper.summarize_chat_from_df(selected_user, df)
+        if st.button("Generate AI Summary"):
+            with st.spinner("Analyzing conversation..."):
+                # Call the helper function
+                summary_text = helper.summarize_chat_from_df(selected_user, df)
 
-        st.markdown(
-            f"<div style='background-color:#0f172a0d;"
-            f"border-radius:10px;border:1px solid #4b5563;"
-            f"padding:10px;font-size:1rem;line-height:1.4;'>"
-            f"{summary_text}</div>",
-            unsafe_allow_html=True,
-        )
+                # PRINT TO TERMINAL FOR DEBUGGING (As you requested)
+                print("\n" + "=" * 50)
+                print("DEBUG: AI SUMMARY OUTPUT")
+                print("=" * 50)
+                print(summary_text)
+                print("=" * 50 + "\n")
+
+                st.write(summary_text)
 
         # timeline
         st.title('Message Activity Over Time')
