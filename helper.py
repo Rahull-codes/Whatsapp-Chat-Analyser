@@ -7,7 +7,6 @@ import os
 import streamlit as st
 import traceback
 
-# --- NEW GOOGLE IMPORT ---
 import google.generativeai as genai
 
 # Configure the API key directly
@@ -184,3 +183,4 @@ def summarize_chat_from_df(selected_user, df):
         if "429" in str(e):
             return "⚠️ AI Usage Limit Reached. Please wait a minute."
         return f"Error: {e}"
+
